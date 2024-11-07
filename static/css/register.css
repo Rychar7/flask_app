@@ -1,0 +1,65 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #ffffff;
+}
+
+.testbox {
+    margin: auto;
+    width: 100%; 
+    max-width: 400px; /* Ajusta el ancho máximo según tu preferencia */
+    height: auto; 
+    padding: 20px;
+    background-color: #ebebeb; 
+    border-radius: 8px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,.31); 
+    border: solid 1px #cbc9c9;
+    position: relative; /* Para centrar verticalmente */
+    top: 50%;
+    transform: translateY(-50%); /* Centrar verticalmente */
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 300;
+    color: #4c4c4c;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column; /* Para que los elementos se apilen */
+}
+
+input[type=text], input[type=password] {
+    width: 100%; /* Hacer que los campos ocupen todo el ancho */
+    height: 39px; 
+    border-radius: 4px; 
+    background-color: #fff; 
+    border: solid 1px #cbc9c9;
+    margin: 10px 0; /* Espaciado entre campos */
+    padding-left: 10px;
+}
+
+.gender, .accounttype {
+    margin: 10px 0;
+}
+
+a.button {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    padding: 6px 25px;
+    text-decoration: none;
+    border-radius: 5px; 
+    background-color: #3a57af; 
+    margin-top: 10px;
+    transition: all 0.1s linear;
+    display: inline-block; /* Asegúrate de que el botón se vea bien */
+}
+
+a.button:hover {
+    background-color: #2e458b;
+}

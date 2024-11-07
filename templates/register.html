@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Para los iconos -->
+</head>
+<body>
+    <div class="container">
+        <div class="screen">
+            <div class="screen__content">
+                <form class="login" action="/register" method="post"> <!-- Cambia aquí la acción para el registro -->
+                    <div class="login__field">
+                        <i class="login__icon fas fa-user"></i>
+                        <input type="text" name="email" class="login__input" placeholder="User name / Email" required>
+                    </div>
+                    <div class="login__field">
+                        <i class="login__icon fas fa-lock"></i>
+                        <input type="password" name="password" class="login__input" placeholder="Password" required>
+                    </div>
+                    <div class="login__field">
+                        <i class="login__icon fas fa-lock"></i>
+                        <input type="password" name="confirm_password" class="login__input" placeholder="Confirm Password" required> <!-- Agregar campo para confirmar la contraseña -->
+                    </div>
+                    <button class="button login__submit" type="submit">
+                        <span class="button__text">Registrarse</span> <!-- Cambia el texto del botón -->
+                        <i class="button__icon fas fa-chevron-right"></i>
+                    </button>                
+                </form>
+                <div class="social-login">
+                    <h3>Registrarse a través de</h3> <!-- Cambiar texto para registro -->
+                    <div class="social-icons">
+                        <a href="#" class="social-login__icon fab fa-instagram"></a>
+                        <a href="#" class="social-login__icon fab fa-facebook"></a>
+                        <a href="#" class="social-login__icon fab fa-twitter"></a>
+                    </div>
+                </div>
+                <!-- Botón para ir al login -->
+                <div class="login__field">
+                    <a href="/login" class="button login__submit">
+                        <span class="button__text">Ya tengo una cuenta. Iniciar sesión</span>
+                    </a>
+                </div>
+            </div>
+            <div class="screen__background">
+                <span class="screen__background__shape screen__background__shape4"></span>
+                <span class="screen__background__shape screen__background__shape3"></span>		
+                <span class="screen__background__shape screen__background__shape2"></span>
+                <span class="screen__background__shape screen__background__shape1"></span>
+            </div>		
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> <!-- Si necesitas JS -->
+</body>
+</html>
