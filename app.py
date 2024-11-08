@@ -9,7 +9,7 @@ import json
 
 # Inicialización de Firebase
 # Leer el JSON de la variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON'
-firebase_creds = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+firebase_creds = json.loads(os.getenv("config/GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 
 # Configurar las credenciales con el diccionario JSON
 cred = credentials.Certificate(firebase_creds)
