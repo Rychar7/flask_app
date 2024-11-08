@@ -9,13 +9,13 @@ import json
 
 # Inicialización de Firebase
 # Leer el JSON de la variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON'
-firebase_creds = json.loads(os.getenv("config/GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+firebase_creds = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 
 # Configurar las credenciales con el diccionario JSON
 cred = credentials.Certificate(firebase_creds)
 firebase_admin.initialize_app(cred, {
-    'storageBucket': os.getenv("laura-24a17.appspot.com"),
-    'databaseURL': os.getenv("https://laura-24a17-default-rtdb.firebaseio.com")
+    'storageBucket': 'laura-24a17.appspot.com',
+    'databaseURL': 'https://laura-24a17-default-rtdb.firebaseio.com'
 })
 
 app = Flask(__name__)
