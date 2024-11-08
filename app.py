@@ -9,7 +9,11 @@ import json
 
 # Inicialización de Firebase
 # Leer el JSON de la variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON'
-firebase_creds = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+firebase_creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not firebase_creds_json:
+    raise ValueError("La variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON' no está configurada correctamente.")
+
+firebase_creds = json.loads(firebase_creds_json)
 
 # Configurar las credenciales con el diccionario JSON
 cred = credentials.Certificate(firebase_creds)
@@ -19,7 +23,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -126,4 +130,6 @@ def login():
     return render_template('login.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Establecer el puerto desde la variable de entorno de Render
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
