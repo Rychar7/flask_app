@@ -7,7 +7,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import os
 
 # Inicialización de Firebase
-cred = credentials.Certificate("GOOGLE_APPLICATION_CREDENTIALS")
+cred = credentials.Certificate("config/laura-24a17-firebase-adminsdk-jswzg-3e63b04f07.json")
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'laura-24a17.appspot.com',
     'databaseURL': 'https://laura-24a17-default-rtdb.firebaseio.com'
