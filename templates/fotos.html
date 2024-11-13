@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Fotos Capturadas</h2>
+    <div id="photos-container">
+        {% for foto in fotos %}
+            <div class="photo-item">
+                <img src="{{ foto['url'] }}" alt="Foto de detección" width="200">
+                <p>Fecha: {{ foto['fecha_hora'] }}</p>
+                <p>Temperatura registrada: {{ foto['temperatura'] }}°C</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

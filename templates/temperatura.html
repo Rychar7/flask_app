@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Temperatura en Tiempo Real</h2>
+    <div class="temperature-info">
+        {% if temperatura is not none %}
+            <p>La temperatura actual en Arequipa es: <strong>{{ temperatura }}°C</strong></p>
+        {% else %}
+            <p>No se pudo obtener la temperatura actual. Inténtelo de nuevo más tarde.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Sección para el gráfico de temperatura (opcional) -->
+    <div class="temperature-chart">
+        <h3>Gráfico de Temperatura en Tiempo Real</h3>
+        <canvas id="temperatureChart" width="400" height="200"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Datos iniciales para el gráfico
+        const temperatureData = {
+            labels: [], // Las etiquetas se actualizarán con los datos de tiempo
+            datasets: [{
+                label: 'Temperatura (°C)',
+                data: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // Configuración del gráfico
+        const config = {
+            type: 'line',
+            data: temperatureData,
+            options: {
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Tiempo' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Temperatura (°C)' },
+                        beginAtZero: false
+                    }
+                }
+            }
+        };
+
+        // Renderizar el gráfico
+        const temperatureChart = new Chart(
+            document.getElementById('temperatureChart'),
+            config
+        );
+
+        // Función para actualizar el gráfico con nueva temperatura
+        function updateTemperatureChart(newTemperature) {
+            const now = new Date();
+            const formattedTime = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+
+            temperatureData.labels.push(formattedTime);
+            temperatureData.datasets[0].data.push(newTemperature);
+
+            // Limitar los puntos en el gráfico a los últimos 10 registros
+            if (temperatureData.labels.length > 10) {
+                temperatureData.labels.shift();
+                temperatureData.datasets[0].data.shift();
+            }
+
+            temperatureChart.update();
+        }
+
+        // Llamada inicial para actualizar el gráfico con la temperatura actual
+        updateTemperatureChart({{ temperatura }});
+
+        // Configuración para actualizar la temperatura cada 60 segundos
+        setInterval(async function() {
+            const response = await fetch("{{ url_for('obtener_temperatura') }}");
+            const data = await response.json();
+            if (data.temperatura !== undefined) {
+                updateTemperatureChart(data.temperatura);
+            }
+        }, 60000);
+    </script>
+{% endblock %}

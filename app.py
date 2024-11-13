@@ -8,14 +8,11 @@ import os
 import json
 
 # Inicialización de Firebase
-# Leer el JSON de la variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON'
 firebase_creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 if not firebase_creds_json:
     raise ValueError("La variable de entorno 'GOOGLE_APPLICATION_CREDENTIALS_JSON' no está configurada correctamente.")
 
 firebase_creds = json.loads(firebase_creds_json)
-
-# Configurar las credenciales con el diccionario JSON
 cred = credentials.Certificate(firebase_creds)
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'laura-24a17.appspot.com',
@@ -33,7 +30,6 @@ API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
 CITY = 'Arequipa'
 
 class User(UserMixin):
-    """Clase User que representa a los usuarios autenticados."""
     def __init__(self, id):
         self.id = id
 
@@ -42,7 +38,6 @@ def load_user(user_id):
     return User(user_id)
 
 def obtener_temperatura_real():
-    """Obtiene la temperatura real desde OpenWeatherMap."""
     url = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
     response = requests.get(url)
     
@@ -56,13 +51,12 @@ def obtener_temperatura_real():
 
 @app.route('/')
 @login_required
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
 @app.route('/fotos')
 @login_required
 def obtener_fotos():
-    """Devuelve las fotos más recientes en formato JSON."""
     ref = db.reference('detecciones')
     detecciones = ref.get()
 
@@ -75,17 +69,13 @@ def obtener_fotos():
                 'temperatura': value.get('temperatura', 'N/A')
             })
 
-    return jsonify(fotos=fotos)
+    return render_template('fotos.html', fotos=fotos)
 
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    """Devuelve la temperatura real."""
     temperatura = obtener_temperatura_real()
-    if temperatura is not None:
-        return jsonify(temperatura=temperatura)
-    else:
-        return jsonify(error='Error al obtener la temperatura'), 500
+    return render_template('temperatura.html', temperatura=temperatura)
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
@@ -121,7 +111,7 @@ def login():
                 if check_password_hash(value['password'], password):
                     user = User(id=key)
                     login_user(user)
-                    return redirect(url_for('index'))
+                    return redirect(url_for('home'))
                 else:
                     flash('Contraseña incorrecta. Intente de nuevo.')
         else:
@@ -130,6 +120,5 @@ def login():
     return render_template('login.html')
 
 if __name__ == '__main__':
-    # Establecer el puerto desde la variable de entorno de Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
