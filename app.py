@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import json
+from collections import defaultdict
+from datetime import datetime
 
 # Inicialización de Firebase
 firebase_creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
@@ -52,7 +54,7 @@ def obtener_temperatura_real():
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html', title="Inicio")
+    return render_template('home.html')
 
 @app.route('/fotos')
 @login_required
@@ -84,14 +86,7 @@ def obtener_fotos():
 @login_required
 def obtener_temperatura():
     temperatura = obtener_temperatura_real()
-    return render_template('temperatura.html', temperatura=temperatura, title="Temperatura en Tiempo Real")
-
-# Ruta para cerrar sesión
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+    return render_template('temperatura.html', temperatura=temperatura)
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
@@ -111,7 +106,7 @@ def register():
             flash('Usuario registrado exitosamente. Ahora puede iniciar sesión.')
             return redirect(url_for('login'))
     
-    return render_template('register.html', title="Registro")
+    return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -133,7 +128,13 @@ def login():
         else:
             flash('Usuario no encontrado. Regístrese primero.')
 
-    return render_template('login.html', title="Iniciar Sesión")
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
