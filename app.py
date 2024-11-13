@@ -69,7 +69,7 @@ def obtener_fotos():
     if detecciones:
         for key, value in detecciones.items():
             fecha_hora = value['fecha_hora']
-            date_obj = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+            date_obj = datetime.strptime(fecha_hora, "%Y%m%d_%H%M%S")
             mes = date_obj.strftime("%B %Y")  # Ejemplo: "Enero 2024"
             
             fotos_por_mes[mes].append({
