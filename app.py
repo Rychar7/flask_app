@@ -60,16 +60,25 @@ def obtener_fotos():
     ref = db.reference('detecciones')
     detecciones = ref.get()
 
-    fotos = []
+    # Agrupar fotos por mes
+    fotos_por_mes = defaultdict(list)
+    monthly_photo_counts = defaultdict(int)
+
     if detecciones:
         for key, value in detecciones.items():
-            fotos.append({
-                'url': value['url_foto'], 
-                'fecha_hora': value['fecha_hora'], 
+            fecha_hora = value['fecha_hora']
+            date_obj = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+            mes = date_obj.strftime("%B %Y")  # Ejemplo: "Enero 2024"
+            
+            fotos_por_mes[mes].append({
+                'url': value['url_foto'],
+                'fecha_hora': fecha_hora,
                 'temperatura': value.get('temperatura', 'N/A')
             })
+            monthly_photo_counts[mes] += 1
 
-    return render_template('fotos.html', fotos=fotos, title="Fotos Capturadas")
+    # Asegúrate de pasar las variables correctas al template
+    return render_template('fotos.html', fotos_por_mes=fotos_por_mes, monthly_photo_counts=monthly_photo_counts, title="Fotos Capturadas")
 
 @app.route('/temperatura')
 @login_required
