@@ -1,13 +1,13 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 import firebase_admin
 from firebase_admin import credentials, db
+from datetime import datetime
+import calendar
 import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import json
-from collections import defaultdict
-from datetime import datetime
 
 # Inicialización de Firebase
 firebase_creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
