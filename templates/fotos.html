@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .photo-container { display: flex; flex-wrap: wrap; gap: 10px; }
-        .photo-item { max-width: 200px; margin: 10px; }
+        .photo-container { display: flex; overflow-x: auto; gap: 10px; }
+        .photo-item { max-width: 150px; margin: 10px; text-align: center; }
         .photo-item img { width: 100%; border-radius: 8px; }
+        .month-buttons { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; }
+        #photosChart { max-width: 300px; margin: auto; }
     </style>
 </head>
 <body>
@@ -18,24 +20,29 @@
     <h1 class="my-4">Fotos Capturadas</h1>
 
     <h2>Gráfico Circular de Fotos por Mes</h2>
-    <canvas id="photosChart" width="400" height="400"></canvas>
+    <div class="text-center">
+        <canvas id="photosChart"></canvas>
+    </div>
 
     <h2 class="my-4">Fotos por Mes</h2>
 
-    {% for mes, fotos in fotos_por_mes.items() %}
-        <div class="mb-3">
+    <div class="month-buttons">
+        {% for mes, fotos in fotos_por_mes.items() %}
             <button class="btn btn-primary" onclick="togglePhotos('{{ mes }}')">
                 {{ mes }}
             </button>
-            <div id="photos-{{ mes }}" class="photo-container" style="display: none;">
-                {% for foto in fotos %}
-                    <div class="photo-item">
-                        <img src="{{ foto['url'] }}" alt="Foto">
-                        <p><strong>Fecha:</strong> {{ foto['fecha_hora'] }}</p>
-                        <p><strong>Temperatura:</strong> {{ foto['temperatura'] }}°C</p>
-                    </div>
-                {% endfor %}
-            </div>
+        {% endfor %}
+    </div>
+
+    {% for mes, fotos in fotos_por_mes.items() %}
+        <div id="photos-{{ mes }}" class="photo-container" style="display: none;">
+            {% for foto in fotos %}
+                <div class="photo-item">
+                    <img src="{{ foto['url'] }}" alt="Foto">
+                    <p><strong>Fecha:</strong> {{ foto['fecha_hora'] }}</p>
+                    <p><strong>Temperatura:</strong> {{ foto['temperatura'] }}°C</p>
+                </div>
+            {% endfor %}
         </div>
     {% endfor %}
 </div>
@@ -43,7 +50,7 @@
 <script>
     function togglePhotos(month) {
         const photoContainer = document.getElementById(`photos-${month}`);
-        photoContainer.style.display = (photoContainer.style.display === 'none') ? 'block' : 'none';
+        photoContainer.style.display = (photoContainer.style.display === 'none') ? 'flex' : 'none';
     }
 
     // Datos para el gráfico circular
