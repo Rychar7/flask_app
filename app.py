@@ -65,15 +65,20 @@ def obtener_fotos():
     fotos_por_mes = {}
     if detecciones:
         for key, value in detecciones.items():
-            fecha = datetime.strptime(value['fecha_hora'], "%Y-%m-%d %H:%M:%S")
-            mes = calendar.month_name[fecha.month]
-            if mes not in fotos_por_mes:
-                fotos_por_mes[mes] = []
-            fotos_por_mes[mes].append({
-                'url': value['url_foto'],
-                'fecha_hora': value['fecha_hora'],
-                'temperatura': value.get('temperatura', 'N/A')
-            })
+            try:
+                # Convertir la fecha usando el nuevo formato
+                fecha = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                mes = calendar.month_name[fecha.month]
+                if mes not in fotos_por_mes:
+                    fotos_por_mes[mes] = []
+                fotos_por_mes[mes].append({
+                    'url': value['url_foto'],
+                    'fecha_hora': value['fecha_hora'],
+                    'temperatura': value.get('temperatura', 'N/A')
+                })
+            except ValueError:
+                print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
+                continue
 
     # Convertir el diccionario a JSON para el gráfico circular
     fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
