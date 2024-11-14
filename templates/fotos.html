@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .photo-container { display: flex; overflow-x: auto; gap: 10px; }
-        .photo-item { max-width: 150px; margin: 10px; text-align: center; }
+        .photo-item { max-width: 150px; margin: 10px; text-align: center; cursor: pointer; }
         .photo-item img { width: 100%; border-radius: 8px; }
         .month-buttons { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; }
         #photosChart { max-width: 300px; margin: auto; }
@@ -16,14 +16,28 @@
 </head>
 <body>
 
+<!-- Cabecera -->
+<header class="bg-dark text-white p-3 mb-4">
+    <div class="container">
+        <nav class="d-flex justify-content-between">
+            <a href="{{ url_for('home') }}" class="text-white">Inicio</a>
+            <a href="{{ url_for('obtener_fotos') }}" class="text-white">Fotos Capturadas</a>
+            <a href="{{ url_for('obtener_temperatura') }}" class="text-white">Temperatura en Tiempo Real</a>
+            <a href="{{ url_for('logout') }}" class="text-white">Cerrar sesión</a>
+        </nav>
+    </div>
+</header>
+
 <div class="container">
     <h1 class="my-4">Fotos Capturadas</h1>
 
+    <!-- Gráfico Circular -->
     <h2>Gráfico Circular de Fotos por Mes</h2>
     <div class="text-center">
         <canvas id="photosChart"></canvas>
     </div>
 
+    <!-- Botones y Fotos por Mes -->
     <h2 class="my-4">Fotos por Mes</h2>
 
     <div class="month-buttons">
@@ -37,7 +51,7 @@
     {% for mes, fotos in fotos_por_mes.items() %}
         <div id="photos-{{ mes }}" class="photo-container" style="display: none;">
             {% for foto in fotos %}
-                <div class="photo-item">
+                <div class="photo-item" onclick="showFullScreen('{{ foto['url'] }}')">
                     <img src="{{ foto['url'] }}" alt="Foto">
                     <p><strong>Fecha:</strong> {{ foto['fecha_hora'] }}</p>
                     <p><strong>Temperatura:</strong> {{ foto['temperatura'] }}°C</p>
@@ -47,10 +61,32 @@
     {% endfor %}
 </div>
 
+<!-- Modal para Visualización de Pantalla Completa -->
+<div class="modal fade" id="fullScreenModal" tabindex="-1" aria-labelledby="fullScreenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fullScreenModalLabel">Foto en Pantalla Completa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="fullScreenImage" src="" class="img-fluid" alt="Foto en Pantalla Completa">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    // Alternar visibilidad de las fotos por mes
     function togglePhotos(month) {
         const photoContainer = document.getElementById(`photos-${month}`);
         photoContainer.style.display = (photoContainer.style.display === 'none') ? 'flex' : 'none';
+    }
+
+    // Mostrar imagen en pantalla completa
+    function showFullScreen(url) {
+        document.getElementById('fullScreenImage').src = url;
+        new bootstrap.Modal(document.getElementById('fullScreenModal')).show();
     }
 
     // Datos para el gráfico circular
@@ -96,6 +132,9 @@
     // Renderizar el gráfico circular
     new Chart(document.getElementById('photosChart'), config);
 </script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
