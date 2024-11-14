@@ -62,25 +62,23 @@ def obtener_fotos():
     ref = db.reference('detecciones')
     detecciones = ref.get()
 
-    # Agrupar fotos por mes
-    fotos_por_mes = defaultdict(list)
-    monthly_photo_counts = defaultdict(int)
-
+    fotos_por_mes = {}
     if detecciones:
         for key, value in detecciones.items():
-            fecha_hora = value['fecha_hora']
-            date_obj = datetime.strptime(fecha_hora, "%Y%m%d_%H%M%S")
-            mes = date_obj.strftime("%B %Y")  # Ejemplo: "Enero 2024"
-            
+            fecha = datetime.strptime(value['fecha_hora'], "%Y-%m-%d %H:%M:%S")
+            mes = calendar.month_name[fecha.month]
+            if mes not in fotos_por_mes:
+                fotos_por_mes[mes] = []
             fotos_por_mes[mes].append({
                 'url': value['url_foto'],
-                'fecha_hora': fecha_hora,
+                'fecha_hora': value['fecha_hora'],
                 'temperatura': value.get('temperatura', 'N/A')
             })
-            monthly_photo_counts[mes] += 1
 
-    # Asegúrate de pasar las variables correctas al template
-    return render_template('fotos.html', fotos_por_mes=fotos_por_mes, monthly_photo_counts=monthly_photo_counts, title="Fotos Capturadas")
+    # Convertir el diccionario a JSON para el gráfico circular
+    fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
+
+    return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
 
 @app.route('/temperatura')
 @login_required
