@@ -1,94 +1,94 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fotos Capturadas</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Chart.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .photo-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .photo-item { max-width: 200px; margin: 10px; }
+        .photo-item img { width: 100%; border-radius: 8px; }
+    </style>
 </head>
 <body>
 
-    {% extends "base.html" %}
-    {% block content %}
-    
-    <div class="container mt-4">
-        <h2 class="text-center">Fotos Capturadas</h2>
+<div class="container">
+    <h1 class="my-4">Fotos Capturadas</h1>
 
-        <!-- Gráfico Circular -->
-        <div class="my-4">
-            <h5 class="text-center">Distribución de Fotos por Mes</h5>
-            <canvas id="fotosChart"></canvas>
-        </div>
+    <h2>Gráfico Circular de Fotos por Mes</h2>
+    <canvas id="photosChart" width="400" height="400"></canvas>
 
-        <!-- Agrupación de fotos por mes -->
-        {% for mes, fotos_mes in fotos_por_mes.items() %}
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ mes }}</h5>
-                    <button class="btn btn-primary" onclick="toggleFotos('{{ mes }}')">Ver/Ocultar Fotos</button>
-                </div>
-                <div class="card-body d-none" id="fotos-{{ mes }}">
-                    <div class="row">
-                        {% for foto in fotos_mes %}
-                            <div class="col-md-4 mb-3">
-                                <div class="card">
-                                    <img src="{{ foto.url }}" class="card-img-top" alt="Foto de {{ mes }}">
-                                    <div class="card-body">
-                                        <p class="card-text">Fecha: {{ foto.fecha_hora }}</p>
-                                        <p class="card-text">Temperatura: {{ foto.temperatura }} °C</p>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
+    <h2 class="my-4">Fotos por Mes</h2>
+
+    {% for mes, fotos in fotos_por_mes.items() %}
+        <div class="mb-3">
+            <button class="btn btn-primary" onclick="togglePhotos('{{ mes }}')">
+                {{ mes }}
+            </button>
+            <div id="photos-{{ mes }}" class="photo-container" style="display: none;">
+                {% for foto in fotos %}
+                    <div class="photo-item">
+                        <img src="{{ foto['url'] }}" alt="Foto">
+                        <p><strong>Fecha:</strong> {{ foto['fecha_hora'] }}</p>
+                        <p><strong>Temperatura:</strong> {{ foto['temperatura'] }}°C</p>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
+</div>
 
-    {% endblock %}
+<script>
+    function togglePhotos(month) {
+        const photoContainer = document.getElementById(`photos-${month}`);
+        photoContainer.style.display = (photoContainer.style.display === 'none') ? 'block' : 'none';
+    }
 
-    <!-- jQuery (opcional para simplificar el toggle) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // Función para mostrar/ocultar fotos por mes
-        function toggleFotos(mes) {
-            const fotosDiv = document.getElementById(`fotos-${mes}`);
-            fotosDiv.classList.toggle('d-none');
-        }
+    // Datos para el gráfico circular
+    const data = {
+        labels: Object.keys({{ fotos_por_mes_json | tojson }}),
+        datasets: [{
+            label: 'Cantidad de fotos por mes',
+            data: Object.values({{ fotos_por_mes_json | tojson }}),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
 
-        // Datos para el gráfico circular (Ejemplo con datos de servidor)
-        const fotosPorMes = {{ fotos_por_mes_json | safe }};
-        const labels = Object.keys(fotosPorMes);
-        const data = Object.values(fotosPorMes).map(fotos => fotos.length);
-
-        // Crear el gráfico circular usando Chart.js
-        const ctx = document.getElementById('fotosChart').getContext('2d');
-        const fotosChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Número de fotos',
-                    data: data,
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#66CCFF', '#FF6666', '#99FF99', '#FF9966', '#CCCCFF', '#FFFF99'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                }
+    // Configuración del gráfico circular
+    const config = {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
             }
-        });
-    </script>
+        }
+    };
+
+    // Renderizar el gráfico circular
+    new Chart(document.getElementById('photosChart'), config);
+</script>
 
 </body>
 </html>

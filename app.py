@@ -66,24 +66,24 @@ def obtener_fotos():
     if detecciones:
         for key, value in detecciones.items():
             try:
-                # Convertir la fecha usando el nuevo formato
                 fecha = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                mes = calendar.month_name[fecha.month]
+                mes = fecha.strftime("%B")  # Nombre completo del mes en inglés
                 if mes not in fotos_por_mes:
                     fotos_por_mes[mes] = []
                 fotos_por_mes[mes].append({
                     'url': value['url_foto'],
-                    'fecha_hora': value['fecha_hora'],
+                    'fecha_hora': fecha.strftime("%Y-%m-%d %H:%M:%S"),
                     'temperatura': value.get('temperatura', 'N/A')
                 })
             except ValueError:
                 print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
                 continue
 
-    # Convertir el diccionario a JSON para el gráfico circular
+    # Crear datos para el gráfico circular (conteo de fotos por mes)
     fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
 
     return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
+
 
 @app.route('/temperatura')
 @login_required
