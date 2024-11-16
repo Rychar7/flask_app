@@ -84,12 +84,30 @@ def obtener_fotos():
 
     return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
 
-
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    temperatura = obtener_temperatura_real()
-    return render_template('temperatura.html', temperatura=temperatura)
+    ref = db.reference('detecciones')
+    detecciones = ref.get()
+
+    temperaturas = []
+    if detecciones:
+        for key, value in detecciones.items():
+            try:
+                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                temperaturas.append({
+                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                    'hora': fecha_hora.strftime("%H:%M:%S"),
+                    'temperatura': value.get('temperatura', 'N/A')
+                })
+            except ValueError:
+                print(f"Error procesando fecha: {value['fecha_hora']}")
+                continue
+
+    # Ordenar las temperaturas cronológicamente
+    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
+
+    return render_template('temperatura.html', temperaturas=temperaturas)
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
