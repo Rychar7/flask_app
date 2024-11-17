@@ -31,6 +31,21 @@
 <div class="container">
     <h1 class="my-4">Fotos Capturadas</h1>
 
+    <!-- Formulario de Búsqueda -->
+    <form method="GET" action="{{ url_for('obtener_fotos') }}" class="mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="fecha" class="form-label">Buscar por Fecha:</label>
+            </div>
+            <div class="col-auto">
+                <input type="date" id="fecha" name="fecha" class="form-control" value="{{ request.args.get('fecha', '') }}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+
     <!-- Gráfico Circular -->
     <h2>Gráfico Circular de Fotos por Mes</h2>
     <div class="text-center">
