@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Detalle de la Foto</h2>
+    <div class="photo-detail">
+        <img src="{{ foto['url'] }}" alt="Foto tomada el {{ foto['fecha_hora'] }}" width="400">
+        <p><strong>Fecha y hora:</strong> {{ foto['fecha_hora'] }}</p>
+        <p><strong>Temperatura:</strong> {{ foto['temperatura'] }}°C</p>
+    </div>
+    <a href="{{ url_for('obtener_temperatura') }}">Volver a la lista de temperaturas</a>
+{% endblock %}
