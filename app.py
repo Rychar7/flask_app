@@ -89,12 +89,16 @@ def mostrar_foto(key):
     foto_data = ref.get()
 
     if foto_data:
-        fecha = datetime.strptime(foto_data['fecha_hora'], "%Y%m%d_%H%M%S")
-        foto_data['fecha_hora'] = fecha.strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            fecha = datetime.strptime(foto_data['fecha_hora'], "%Y%m%d_%H%M%S")
+            foto_data['fecha_hora'] = fecha.strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            foto_data['fecha_hora'] = "Formato de fecha inválido"
     else:
         foto_data = {}
 
     return render_template('foto.html', foto=foto_data)
+
 
 @app.route('/temperatura')
 @login_required
