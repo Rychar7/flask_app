@@ -59,7 +59,6 @@ def home():
 @app.route('/fotos')
 @login_required
 def obtener_fotos():
-    fecha_busqueda = request.args.get('fecha')
     ref = db.reference('detecciones')
     detecciones = ref.get()
 
@@ -68,9 +67,7 @@ def obtener_fotos():
         for key, value in detecciones.items():
             try:
                 fecha = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                mes = fecha.strftime("%B")
-                if fecha_busqueda and fecha.strftime("%Y-%m-%d") != fecha_busqueda:
-                    continue
+                mes = fecha.strftime("%B")  # Nombre completo del mes en inglés
                 if mes not in fotos_por_mes:
                     fotos_por_mes[mes] = []
                 fotos_por_mes[mes].append({
@@ -82,6 +79,7 @@ def obtener_fotos():
                 print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
                 continue
 
+    # Crear datos para el gráfico circular (conteo de fotos por mes)
     fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
 
     return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
