@@ -73,35 +73,16 @@ def obtener_fotos():
                 fotos_por_mes[mes].append({
                     'url': value['url_foto'],
                     'fecha_hora': fecha.strftime("%Y-%m-%d %H:%M:%S"),
-                    'temperatura': value.get('temperatura', 'N/A'),
-                    'key': key
+                    'temperatura': value.get('temperatura', 'N/A')
                 })
             except ValueError:
                 print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
                 continue
 
-    return render_template('fotos.html', fotos_por_mes=fotos_por_mes)
+    # Crear datos para el gráfico circular (conteo de fotos por mes)
+    fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
 
-@app.route('/foto/<key>')
-@login_required
-def mostrar_foto(key):
-    ref = db.reference(f'detecciones/{key}')
-    foto_data = ref.get()
-
-    if foto_data:
-        # Convertir la fecha al formato deseado
-        try:
-            fecha = datetime.strptime(foto_data['fecha_hora'], "%Y%m%d_%H%M%S")
-            foto_data['fecha_hora'] = fecha.strftime("%Y-%m-%d %H:%M:%S")
-        except KeyError:
-            foto_data['fecha_hora'] = "Fecha no disponible"
-    else:
-        # Manejar el caso en que no se encuentra la foto en Firebase
-        flash("No se encontró la foto solicitada.")
-        return redirect(url_for('obtener_fotos'))
-
-    return render_template('foto.html', foto=foto_data)
-
+    return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
 
 @app.route('/temperatura')
 @login_required
@@ -109,25 +90,26 @@ def obtener_temperatura():
     ref = db.reference('detecciones')
     detecciones = ref.get()
 
-    fotos_temperatura = []
+    temperaturas = []
     if detecciones:
         for key, value in detecciones.items():
             try:
-                fecha = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                fotos_temperatura.append({
-                    'fecha_hora': fecha.strftime("%Y-%m-%d %H:%M:%S"),
-                    'url': value['url_foto'],
-                    'key': key,
+                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                temperaturas.append({
+                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                    'hora': fecha_hora.strftime("%H:%M:%S"),
                     'temperatura': value.get('temperatura', 'N/A')
                 })
             except ValueError:
-                print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
+                print(f"Error procesando fecha: {value['fecha_hora']}")
                 continue
 
-    temperatura_actual = obtener_temperatura_real()
+    # Ordenar las temperaturas cronológicamente
+    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
-    return render_template('temperatura.html', fotos_temperatura=fotos_temperatura, temperatura=temperatura_actual)
+    return render_template('temperatura.html', temperaturas=temperaturas)
 
+# Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

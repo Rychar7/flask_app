@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Temperatura en Tiempo Real</h2>
-    <div class="temperature-info">
-        {% if temperatura is not none %}
-            <p>La temperatura actual en Arequipa es: <strong>{{ temperatura }}°C</strong></p>
-        {% else %}
-            <p>No se pudo obtener la temperatura actual. Inténtelo de nuevo más tarde.</p>
-        {% endif %}
+    <h2>Registro de Temperaturas</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Temperatura (°C)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in temperaturas %}
+                <tr>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora }}</td>
+                    <td>{{ registro.temperatura }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <h3>Fotos asociadas con temperatura registrada</h3>
-    <ul>
-        {% for foto in fotos_temperatura %}
-            <li>
-                <a href="{{ url_for('mostrar_foto', key=foto.key) }}">
-                    {{ foto.fecha_hora }} - {{ foto.temperatura }}°C
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
 {% endblock %}
