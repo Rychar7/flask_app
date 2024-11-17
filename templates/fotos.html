@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
     <h2>Detalles de la Foto</h2>
-    <div>
-        <p><strong>Fecha y Hora:</strong> {{ foto.fecha_hora }}</p>
-        <p><strong>Temperatura:</strong> {{ foto.temperatura }}°C</p>
-        <img src="{{ foto.url }}" alt="Foto capturada" style="max-width: 100%;">
-    </div>
+    {% if foto %}
+        <div>
+            <p><strong>Fecha y Hora:</strong> {{ foto.fecha_hora }}</p>
+            <p><strong>Temperatura:</strong> {{ foto.temperatura }}°C</p>
+            <img src="{{ foto.url }}" alt="Foto capturada" style="max-width: 100%;">
+        </div>
+    {% else %}
+        <p>No se encontraron detalles para esta foto.</p>
+    {% endif %}
+    <a href="{{ url_for('obtener_fotos') }}">Volver a la lista de fotos</a>
 {% endblock %}

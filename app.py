@@ -89,12 +89,19 @@ def mostrar_foto(key):
     foto_data = ref.get()
 
     if foto_data:
-        fecha = datetime.strptime(foto_data['fecha_hora'], "%Y%m%d_%H%M%S")
-        foto_data['fecha_hora'] = fecha.strftime("%Y-%m-%d %H:%M:%S")
+        # Convertir la fecha al formato deseado
+        try:
+            fecha = datetime.strptime(foto_data['fecha_hora'], "%Y%m%d_%H%M%S")
+            foto_data['fecha_hora'] = fecha.strftime("%Y-%m-%d %H:%M:%S")
+        except KeyError:
+            foto_data['fecha_hora'] = "Fecha no disponible"
     else:
-        foto_data = {}
+        # Manejar el caso en que no se encuentra la foto en Firebase
+        flash("No se encontró la foto solicitada.")
+        return redirect(url_for('obtener_fotos'))
 
     return render_template('foto.html', foto=foto_data)
+
 
 @app.route('/temperatura')
 @login_required
