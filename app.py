@@ -84,7 +84,7 @@ def obtener_fotos():
 
     return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
 
-@app.route('/temperatura_firebase')
+@app.route('/temperatura')
 @login_required
 def obtener_temperatura_firebase():
     # Referencia a la base de datos 'temperatura'
@@ -110,7 +110,6 @@ def obtener_temperatura_firebase():
     temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
     return render_template('temperatura_firebase.html', temperaturas=temperaturas)
-
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
