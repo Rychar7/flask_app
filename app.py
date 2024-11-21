@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 import firebase_admin
 from firebase_admin import credentials, db
 from datetime import datetime
-import calendar
 import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -28,9 +27,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
-CITY = 'Arequipa'
-
 class User(UserMixin):
     def __init__(self, id):
         self.id = id
@@ -39,63 +35,23 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
-def obtener_temperatura_real():
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        data = response.json()
-        temperatura = data['main']['temp']
-        return temperatura
-    else:
-        print(f"Error al obtener la temperatura: {response.status_code} - {response.text}")
-        return None
-
 @app.route('/')
 @login_required
 def home():
     return render_template('home.html')
 
-@app.route('/fotos')
-@login_required
-def obtener_fotos():
-    ref = db.reference('detecciones')
-    detecciones = ref.get()
-
-    fotos_por_mes = {}
-    if detecciones:
-        for key, value in detecciones.items():
-            try:
-                fecha = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                mes = fecha.strftime("%B")  # Nombre completo del mes en inglés
-                if mes not in fotos_por_mes:
-                    fotos_por_mes[mes] = []
-                fotos_por_mes[mes].append({
-                    'url': value['url_foto'],
-                    'fecha_hora': fecha.strftime("%Y-%m-%d %H:%M:%S"),
-                    'temperatura': value.get('temperatura', 'N/A')
-                })
-            except ValueError:
-                print(f"Formato de fecha incorrecto en la entrada: {value['fecha_hora']}")
-                continue
-
-    # Crear datos para el gráfico circular (conteo de fotos por mes)
-    fotos_por_mes_json = {mes: len(fotos) for mes, fotos in fotos_por_mes.items()}
-
-    return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
-
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    # Referencia a la base de datos de detecciones y temperatura
+    # Obtener datos de la tabla "detecciones"
     ref_detecciones = db.reference('detecciones')
-    ref_temperatura = db.reference('temperatura')  # Nueva referencia para obtener datos de la tabla 'temperatura'
-
-    # Obtener datos de ambas secciones
     detecciones = ref_detecciones.get()
+
+    # Obtener datos de la tabla "temperatura"
+    ref_temperatura = db.reference('temperatura')
     temperatura_db = ref_temperatura.get()
 
-    temperaturas = []  # Lista para almacenar temperaturas procesadas
+    temperaturas = []  # Lista combinada de temperaturas
     if detecciones:
         for key, value in detecciones.items():
             try:
@@ -109,7 +65,6 @@ def obtener_temperatura():
                 print(f"Error procesando fecha: {value['fecha_hora']}")
                 continue
 
-    # Agregar datos de la tabla de 'temperatura'
     if temperatura_db:
         for key, value in temperatura_db.items():
             try:
@@ -123,13 +78,11 @@ def obtener_temperatura():
                 print(f"Error procesando fecha: {value['fecha_hora']}")
                 continue
 
-    # Ordenar todas las temperaturas cronológicamente
+    # Ordenar las temperaturas por fecha y hora
     temperaturas = sorted(temperaturas, key=lambda x: (x['fecha'], x['hora']))
 
     return render_template('temperatura.html', temperaturas=temperaturas)
 
-
-# Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

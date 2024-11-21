@@ -1,88 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temperatura en Tiempo Real</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-<header class="bg-dark text-white p-3 mb-4">
-    <div class="container">
-        <nav class="d-flex justify-content-between">
-            <a href="{{ url_for('home') }}" class="text-white">Inicio</a>
-            <a href="{{ url_for('obtener_fotos') }}" class="text-white">Fotos Capturadas</a>
-            <a href="{{ url_for('obtener_temperatura') }}" class="text-white">Temperatura en Tiempo Real</a>
-            <a href="{{ url_for('logout') }}" class="text-white">Cerrar sesión</a>
-        </nav>
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <h2>Registro de Temperaturas</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Temperatura (°C)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in temperaturas %}
+                    <tr>
+                        <td>{{ registro.fecha }}</td>
+                        <td>{{ registro.hora }}</td>
+                        <td>{{ registro.temperatura }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</header>
-
-<div class="container">
-    <h1 class="mb-4">Temperatura en Tiempo Real</h1>
-
-    <!-- Tabla de Temperaturas -->
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Temperatura (°C)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for temp in temperaturas %}
-                <tr>
-                    <td>{{ temp.fecha }}</td>
-                    <td>{{ temp.hora }}</td>
-                    <td>{{ temp.temperatura }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Gráfico de Temperaturas -->
-    <h2>Gráfico de Temperatura en el Tiempo</h2>
-    <canvas id="temperatureChart"></canvas>
-</div>
-
-<script>
-    // Preparar datos para el gráfico
-    const temperatureData = {
-        labels: [{% for temp in temperaturas %}"{{ temp.fecha }} {{ temp.hora }}",{% endfor %}],
-        datasets: [{
-            label: 'Temperatura (°C)',
-            data: [{% for temp in temperaturas %}{{ temp.temperatura }},{% endfor %}],
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-        }]
-    };
-
-    // Configuración del gráfico
-    const config = {
-        type: 'line',
-        data: temperatureData,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-            scales: {
-                x: { title: { display: true, text: 'Fecha y Hora' } },
-                y: { title: { display: true, text: 'Temperatura (°C)' } }
-            }
-        }
-    };
-
-    // Renderizar el gráfico
-    new Chart(document.getElementById('temperatureChart'), config);
-</script>
-
-<!-- Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
