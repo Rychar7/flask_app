@@ -94,22 +94,29 @@ def obtener_temperatura():
     datos_temperatura = []
     if temperaturas:
         for key, value in temperaturas.items():
-            try:
-                # Asumimos que la base de datos tiene campos 'fecha' y 'temperatura'
-                fecha_hora = datetime.strptime(value['fecha'], "%Y%m%d_%H%M%S")
-                datos_temperatura.append({
-                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
-                    'hora': fecha_hora.strftime("%H:%M:%S"),
-                    'temperatura': value.get('temperatura', 'N/A')
-                })
-            except ValueError:
-                print(f"Error procesando fecha: {value['fecha']}")
-                continue
+            # Depurar lo que contiene cada valor de 'value'
+            print(f"Registro en 'temperatura': {value}")
+
+            # Verificar si 'value' es un diccionario y contiene la clave 'fecha'
+            if isinstance(value, dict) and 'fecha' in value:
+                try:
+                    # Procesar la fecha si está presente
+                    fecha_hora = datetime.strptime(value['fecha'], "%Y%m%d_%H%M%S")
+                    datos_temperatura.append({
+                        'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                        'hora': fecha_hora.strftime("%H:%M:%S"),
+                        'temperatura': value.get('temperatura', 'N/A')
+                    })
+                except ValueError:
+                    print(f"Error procesando la fecha: {value['fecha']}")
+            else:
+                print(f"El valor en 'temperatura' no es un diccionario o no contiene la clave 'fecha': {value}")
 
     # Ordenar las temperaturas cronológicamente
     datos_temperatura = sorted(datos_temperatura, key=lambda x: x['fecha'])
 
     return render_template('temperatura.html', datos_temperatura=datos_temperatura)
+
 
 
 
