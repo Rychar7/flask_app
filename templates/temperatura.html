@@ -1,18 +1,29 @@
-<table class="table">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Temperatura (°C)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for temperatura in temperaturas %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros de Temperatura</title>
+</head>
+<body>
+    <h1>Registros de Temperatura desde Firebase</h1>
+    <table border="1">
+        <thead>
             <tr>
-                <td>{{ temperatura.fecha }}</td>
-                <td>{{ temperatura.hora }}</td>
-                <td>{{ temperatura.temperatura }}</td>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Temperatura (°C)</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for registro in temperaturas %}
+            <tr>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora }}</td>
+                <td>{{ registro.temperatura }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
