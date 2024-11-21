@@ -87,13 +87,16 @@ def obtener_fotos():
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    ref = db.reference('detecciones')
-    detecciones = ref.get()
+    # Referencia a la entrada 'temperatura' en Firebase
+    ref_temperatura = db.reference('temperatura')
+    temperaturas_db = ref_temperatura.get()
 
+    # Procesar datos de la temperatura
     temperaturas = []
-    if detecciones:
-        for key, value in detecciones.items():
+    if temperaturas_db:
+        for key, value in temperaturas_db.items():
             try:
+                # Extraer datos y formatear fecha y hora
                 fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
                 temperaturas.append({
                     'fecha': fecha_hora.strftime("%Y-%m-%d"),
@@ -108,6 +111,7 @@ def obtener_temperatura():
     temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
     return render_template('temperatura.html', temperaturas=temperaturas)
+
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
