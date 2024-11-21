@@ -87,55 +87,32 @@ def obtener_fotos():
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    # Referencia a la entrada 'temperatura' en Firebase
-    ref_temperatura = db.reference('temperatura')
-    temperaturas_db = ref_temperatura.get()
+    ref = db.reference('detecciones')
+    detecciones = ref.get()
 
-    # Procesar datos de la temperatura
     temperaturas = []
-    if temperaturas_db:
-        value = 20241015.141722  # Reemplaza esto por el valor que estás manejando
+    if detecciones:
+        for key, value in detecciones.items():
+            try:
+                # Verifica si la entrada contiene los datos de temperatura
+                temperatura = value.get('temperatura', None)
+                if temperatura is not None:
+                    fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                    temperaturas.append({
+                        'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                        'hora': fecha_hora.strftime("%H:%M:%S"),
+                        'temperatura': temperatura
+                    })
+                else:
+                    print(f"Temperatura no encontrada para la detección {key}.")
+            except ValueError:
+                print(f"Error procesando fecha: {value.get('fecha_hora', 'N/A')}")
+                continue
 
-try:
-    # Verificar si 'value' es un diccionario con la clave 'fecha_hora'
-    if isinstance(value, dict) and 'fecha_hora' in value:
-        fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-    # Verificar si 'value' es un número flotante que debe ser convertido
-    elif isinstance(value, float):
-        # Convertir el flotante a entero y luego a cadena
-        fecha_hora_str = str(int(value))
-        fecha_hora = datetime.strptime(fecha_hora_str, "%Y%m%d")
-    else:
-        raise ValueError(f"Formato inesperado para 'value': {value}")
+    # Ordenar las temperaturas cronológicamente
+    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
-    print(f"Fecha y hora procesada: {fecha_hora}")
-
-except Exception as e:
-    print(f"Error al procesar la fecha y hora: {e}")
-
-    @app.route('/obtener_temperatura')
-def obtener_temperatura():
-    # Supongamos que 'value' es el dato que recibes, que en este caso es un flotante
-    value = 20241015.141722  # Reemplaza esto por el valor que estás manejando
-
-    try:
-        # Verificar si 'value' es un diccionario con la clave 'fecha_hora'
-        if isinstance(value, dict) and 'fecha_hora' in value:
-            fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-        # Verificar si 'value' es un número flotante que debe ser convertido
-        elif isinstance(value, float):
-            # Convertir el flotante a entero y luego a cadena
-            fecha_hora_str = str(int(value))
-            fecha_hora = datetime.strptime(fecha_hora_str, "%Y%m%d")
-        else:
-            raise ValueError(f"Formato inesperado para 'value': {value}")
-
-        # Asegúrate de devolver una respuesta válida
-        return jsonify({"fecha_hora": fecha_hora.strftime("%Y-%m-%d %H:%M:%S")})
-
-    except Exception as e:
-        # Manejo de error y retorno de mensaje adecuado
-        return jsonify({"error": str(e)}), 400
+    return render_template('temperatura.html', temperaturas=temperaturas)
 
 
 # Rutas de autenticación
