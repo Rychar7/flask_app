@@ -87,10 +87,15 @@ def obtener_fotos():
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    ref = db.reference('detecciones')
-    detecciones = ref.get()
+    # Referencia a la base de datos de detecciones y temperatura
+    ref_detecciones = db.reference('detecciones')
+    ref_temperatura = db.reference('temperatura')  # Nueva referencia para obtener datos de la tabla 'temperatura'
 
-    temperaturas = []
+    # Obtener datos de ambas secciones
+    detecciones = ref_detecciones.get()
+    temperatura_db = ref_temperatura.get()
+
+    temperaturas = []  # Lista para almacenar temperaturas procesadas
     if detecciones:
         for key, value in detecciones.items():
             try:
@@ -104,10 +109,25 @@ def obtener_temperatura():
                 print(f"Error procesando fecha: {value['fecha_hora']}")
                 continue
 
-    # Ordenar las temperaturas cronológicamente
-    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
+    # Agregar datos de la tabla de 'temperatura'
+    if temperatura_db:
+        for key, value in temperatura_db.items():
+            try:
+                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                temperaturas.append({
+                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                    'hora': fecha_hora.strftime("%H:%M:%S"),
+                    'temperatura': value.get('temperatura', 'N/A')
+                })
+            except ValueError:
+                print(f"Error procesando fecha: {value['fecha_hora']}")
+                continue
+
+    # Ordenar todas las temperaturas cronológicamente
+    temperaturas = sorted(temperaturas, key=lambda x: (x['fecha'], x['hora']))
 
     return render_template('temperatura.html', temperaturas=temperaturas)
+
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
