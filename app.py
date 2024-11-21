@@ -86,30 +86,33 @@ def obtener_fotos():
 
 @app.route('/temperatura')
 @login_required
-def obtener_temperatura_firebase():
-    # Referencia a la base de datos 'temperatura'
-    ref = db.reference('temperatura')
-    registros_temperatura = ref.get()
+def obtener_temperatura():
+    ref = db.reference('detecciones')
+    detecciones = ref.get()
 
-    temperaturas = []
-    if registros_temperatura:
-        for key, value in registros_temperatura.items():
+    datos_temperatura_fotos = []
+    if detecciones:
+        for key, value in detecciones.items():
             try:
-                # Convertir la fecha del registro (si es necesario)
+                # Convertir la fecha_hora
                 fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                temperaturas.append({
+
+                # Crear el registro con foto y temperatura
+                datos_temperatura_fotos.append({
                     'fecha': fecha_hora.strftime("%Y-%m-%d"),
                     'hora': fecha_hora.strftime("%H:%M:%S"),
+                    'url_foto': value.get('url_foto', 'N/A'),
                     'temperatura': value.get('temperatura', 'N/A')
                 })
-            except (ValueError, KeyError):
-                print(f"Error procesando registro: {value}")
+            except ValueError:
+                print(f"Error procesando fecha: {value['fecha_hora']}")
                 continue
 
     # Ordenar las temperaturas cronológicamente
-    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
+    datos_temperatura_fotos = sorted(datos_temperatura_fotos, key=lambda x: (x['fecha'], x['hora']))
 
-    return render_template('temperatura_firebase.html', temperaturas=temperaturas)
+    return render_template('temperatura.html', datos_temperatura_fotos=datos_temperatura_fotos)
+
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])

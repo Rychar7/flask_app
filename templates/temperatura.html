@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registros de Temperatura</title>
+    <title>Temperaturas y Fotos</title>
 </head>
 <body>
-    <h1>Registros de Temperatura desde Firebase</h1>
-    <table border="1">
+    <h1>Temperaturas y Fotos Registradas</h1>
+    <table>
         <thead>
             <tr>
                 <th>Fecha</th>
                 <th>Hora</th>
-                <th>Temperatura (°C)</th>
+                <th>Foto</th>
+                <th>Temperatura</th>
             </tr>
         </thead>
         <tbody>
-            {% for registro in temperaturas %}
-            <tr>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora }}</td>
-                <td>{{ registro.temperatura }}</td>
-            </tr>
+            {% for item in datos_temperatura_fotos %}
+                <tr>
+                    <td>{{ item.fecha }}</td>
+                    <td>{{ item.hora }}</td>
+                    <td><img src="{{ item.url_foto }}" alt="Foto" width="100"></td>
+                    <td>{{ item.temperatura }} °C</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
