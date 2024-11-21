@@ -86,7 +86,7 @@ def obtener_fotos():
 
 @app.route('/temperatura', methods=['GET'])
 @login_required
-def obtener_temperaturas():
+def temperaturas():
     # Conexión a Firebase
     db_ref = db.reference('fotos')
     fotos_data = db_ref.get()
