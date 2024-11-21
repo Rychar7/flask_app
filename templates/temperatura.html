@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registros de Temperatura</title>
-</head>
-<body>
-    <h1>Registros de Temperatura desde Firebase</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Temperatura (°C)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for registro in temperaturas %}
-            <tr>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora }}</td>
-                <td>{{ registro.temperatura }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <h2>Registro de Temperaturas</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Temperatura (°C)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in temperaturas %}
+                <tr>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora }}</td>
+                    <td>{{ registro.temperatura }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
