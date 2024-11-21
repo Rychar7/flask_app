@@ -94,23 +94,24 @@ def obtener_temperatura():
     # Procesar datos de la temperatura
     temperaturas = []
     if temperaturas_db:
-        for key, value in temperaturas_db.items():
-            try:
-                # Extraer datos y formatear fecha y hora
-                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-                temperaturas.append({
-                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
-                    'hora': fecha_hora.strftime("%H:%M:%S"),
-                    'temperatura': value.get('temperatura', 'N/A')
-                })
-            except ValueError:
-                print(f"Error procesando fecha: {value['fecha_hora']}")
-                continue
+        value = 20241015.141722  # Reemplaza esto por el valor que estás manejando
 
-    # Ordenar las temperaturas cronológicamente
-    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
+try:
+    # Verificar si 'value' es un diccionario con la clave 'fecha_hora'
+    if isinstance(value, dict) and 'fecha_hora' in value:
+        fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+    # Verificar si 'value' es un número flotante que debe ser convertido
+    elif isinstance(value, float):
+        # Convertir el flotante a entero y luego a cadena
+        fecha_hora_str = str(int(value))
+        fecha_hora = datetime.strptime(fecha_hora_str, "%Y%m%d")
+    else:
+        raise ValueError(f"Formato inesperado para 'value': {value}")
 
-    return render_template('temperatura.html', temperaturas=temperaturas)
+    print(f"Fecha y hora procesada: {fecha_hora}")
+
+except Exception as e:
+    print(f"Error al procesar la fecha y hora: {e}")
 
 
 # Rutas de autenticación
