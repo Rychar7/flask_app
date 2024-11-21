@@ -1,49 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temperaturas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-</head>
-<body>
-
-<!-- Cabecera -->
-<header class="bg-dark text-white p-3 mb-4">
-    <div class="container">
-        <nav class="d-flex justify-content-between">
-            <a href="{{ url_for('home') }}" class="text-white">Inicio</a>
-            <a href="{{ url_for('obtener_fotos') }}" class="text-white">Fotos Capturadas</a>
-            <a href="{{ url_for('obtener_temperatura') }}" class="text-white">Temperatura en Tiempo Real</a>
-            <a href="{{ url_for('logout') }}" class="text-white">Cerrar sesión</a>
-        </nav>
-    </div>
-</header>
-
-<div class="container">
-    <h1 class="my-4">Temperaturas Registradas</h1>
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Temperatura (°C)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for temperatura in temperaturas %}
             <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Temperatura (°C)</th>
+                <td>{{ temperatura.fecha }}</td>
+                <td>{{ temperatura.hora }}</td>
+                <td>{{ temperatura.temperatura }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for temperatura in temperaturas %}
-                <tr>
-                    <td>{{ temperatura.fecha }}</td>
-                    <td>{{ temperatura.hora }}</td>
-                    <td>{{ temperatura.temperatura }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+        {% endfor %}
+    </tbody>
+</table>

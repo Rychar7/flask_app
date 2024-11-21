@@ -94,19 +94,22 @@ def obtener_temperatura():
     if detecciones:
         for key, value in detecciones.items():
             try:
-                # Verifica si la entrada contiene los datos de temperatura
-                temperatura = value.get('temperatura', None)
-                if temperatura is not None:
+                # Imprimir los datos completos para depuración
+                print(f"Procesando clave {key}: {value}")
+
+                # Verificar si la fecha y la temperatura están en la entrada
+                if 'fecha_hora' in value and 'temperatura' in value:
                     fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                    temperatura = value['temperatura']
                     temperaturas.append({
                         'fecha': fecha_hora.strftime("%Y-%m-%d"),
                         'hora': fecha_hora.strftime("%H:%M:%S"),
                         'temperatura': temperatura
                     })
                 else:
-                    print(f"Temperatura no encontrada para la detección {key}.")
-            except ValueError:
-                print(f"Error procesando fecha: {value.get('fecha_hora', 'N/A')}")
+                    print(f"Faltan datos en la entrada {key}")
+            except ValueError as e:
+                print(f"Error procesando fecha o datos: {value.get('fecha_hora', 'N/A')}, error: {e}")
                 continue
 
     # Ordenar las temperaturas cronológicamente
