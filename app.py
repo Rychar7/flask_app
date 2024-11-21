@@ -84,33 +84,30 @@ def obtener_fotos():
 
     return render_template('fotos.html', fotos_por_mes=fotos_por_mes, fotos_por_mes_json=fotos_por_mes_json)
 
-@app.route('/temperatura', methods=['GET'])
+@app.route('/temperatura')
 @login_required
-def temperaturas():
-    # Conexión a Firebase
-    db_ref = db.reference('fotos')
-    fotos_data = db_ref.get()
+def obtener_temperatura():
+    ref = db.reference('detecciones')
+    detecciones = ref.get()
 
-    # Crear una lista con las temperaturas y fechas de las fotos
     temperaturas = []
-    for key, value in fotos_data.items():
-        if 'fecha_hora' in value and 'temperatura' in value:
+    if detecciones:
+        for key, value in detecciones.items():
             try:
-                # Convertir la fecha del formato almacenado
                 fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
                 temperaturas.append({
-                    'fecha': fecha_hora.strftime("%d-%m-%Y"),
+                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
                     'hora': fecha_hora.strftime("%H:%M:%S"),
-                    'temperatura': value['temperatura']
+                    'temperatura': value.get('temperatura', 'N/A')
                 })
             except ValueError:
-                print(f"Error al procesar fecha: {value['fecha_hora']}")
-    
-    # Ordenar las temperaturas por fecha y hora
+                print(f"Error procesando fecha: {value['fecha_hora']}")
+                continue
+
+    # Ordenar las temperaturas cronológicamente
     temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
     return render_template('temperatura.html', temperaturas=temperaturas)
-
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])
