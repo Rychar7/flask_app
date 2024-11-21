@@ -87,31 +87,30 @@ def obtener_fotos():
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    ref = db.reference('detecciones')
-    detecciones = ref.get()
+    # Obtener los datos de la base de datos en la referencia 'temperatura'
+    ref = db.reference('temperatura')
+    temperaturas = ref.get()
 
-    datos_temperatura_fotos = []
-    if detecciones:
-        for key, value in detecciones.items():
+    datos_temperatura = []
+    if temperaturas:
+        for key, value in temperaturas.items():
             try:
-                # Convertir la fecha_hora
-                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
-
-                # Crear el registro con foto y temperatura
-                datos_temperatura_fotos.append({
+                # Asumimos que la base de datos tiene campos 'fecha' y 'temperatura'
+                fecha_hora = datetime.strptime(value['fecha'], "%Y%m%d_%H%M%S")
+                datos_temperatura.append({
                     'fecha': fecha_hora.strftime("%Y-%m-%d"),
                     'hora': fecha_hora.strftime("%H:%M:%S"),
-                    'url_foto': value.get('url_foto', 'N/A'),
                     'temperatura': value.get('temperatura', 'N/A')
                 })
             except ValueError:
-                print(f"Error procesando fecha: {value['fecha_hora']}")
+                print(f"Error procesando fecha: {value['fecha']}")
                 continue
 
     # Ordenar las temperaturas cronológicamente
-    datos_temperatura_fotos = sorted(datos_temperatura_fotos, key=lambda x: (x['fecha'], x['hora']))
+    datos_temperatura = sorted(datos_temperatura, key=lambda x: x['fecha'])
 
-    return render_template('temperatura.html', datos_temperatura_fotos=datos_temperatura_fotos)
+    return render_template('temperatura.html', datos_temperatura=datos_temperatura)
+
 
 
 # Rutas de autenticación

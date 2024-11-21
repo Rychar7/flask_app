@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temperaturas y Fotos</title>
+    <title>Temperatura</title>
 </head>
 <body>
-    <h1>Temperaturas y Fotos Registradas</h1>
-    <table>
+    <h1>Registro de Temperaturas</h1>
+    <table border="1">
         <thead>
             <tr>
                 <th>Fecha</th>
                 <th>Hora</th>
-                <th>Foto</th>
                 <th>Temperatura</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in datos_temperatura_fotos %}
-                <tr>
-                    <td>{{ item.fecha }}</td>
-                    <td>{{ item.hora }}</td>
-                    <td><img src="{{ item.url_foto }}" alt="Foto" width="100"></td>
-                    <td>{{ item.temperatura }} °C</td>
-                </tr>
+            {% for registro in datos_temperatura %}
+            <tr>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora }}</td>
+                <td>{{ registro.temperatura }} °C</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
