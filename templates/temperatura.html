@@ -8,21 +8,6 @@
 </head>
 <body>
 
-<!-- Cabecera -->
-<header class="bg-primary text-white p-3 mb-4">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h4 mb-0">Aplicación</h1>
-            <nav class="d-flex gap-3">
-                <a href="{{ url_for('home') }}" class="text-white text-decoration-none">Inicio</a>
-                <a href="{{ url_for('obtener_fotos') }}" class="text-white text-decoration-none">Fotos Capturadas</a>
-                <a href="{{ url_for('obtener_temperatura') }}" class="text-white text-decoration-none">Temperatura en Tiempo Real</a>
-                <a href="{{ url_for('logout') }}" class="text-white text-decoration-none">Cerrar sesión</a>
-            </nav>
-        </div>
-    </div>
-</header>
-
 <div class="container">
     <h2 class="text-center mb-4">Temperatura Registrada</h2>
 
