@@ -87,38 +87,27 @@ def obtener_fotos():
 @app.route('/temperatura')
 @login_required
 def obtener_temperatura():
-    # Obtener los datos de la base de datos en la referencia 'temperatura'
-    ref = db.reference('temperatura')
-    temperaturas = ref.get()
+    ref = db.reference('detecciones')
+    detecciones = ref.get()
 
-    datos_temperatura = []
-    if temperaturas:
-        for key, value in temperaturas.items():
-            # Depurar lo que contiene cada valor de 'value'
-            print(f"Registro en 'temperatura': {value}")
-
-            # Verificar si 'value' es un diccionario y contiene la clave 'fecha'
-            if isinstance(value, dict) and 'fecha' in value:
-                try:
-                    # Procesar la fecha si está presente
-                    fecha_hora = datetime.strptime(value['fecha'], "%Y%m%d_%H%M%S")
-                    datos_temperatura.append({
-                        'fecha': fecha_hora.strftime("%Y-%m-%d"),
-                        'hora': fecha_hora.strftime("%H:%M:%S"),
-                        'temperatura': value.get('temperatura', 'N/A')
-                    })
-                except ValueError:
-                    print(f"Error procesando la fecha: {value['fecha']}")
-            else:
-                print(f"El valor en 'temperatura' no es un diccionario o no contiene la clave 'fecha': {value}")
+    temperaturas = []
+    if detecciones:
+        for key, value in detecciones.items():
+            try:
+                fecha_hora = datetime.strptime(value['fecha_hora'], "%Y%m%d_%H%M%S")
+                temperaturas.append({
+                    'fecha': fecha_hora.strftime("%Y-%m-%d"),
+                    'hora': fecha_hora.strftime("%H:%M:%S"),
+                    'temperatura': value.get('temperatura', 'N/A')
+                })
+            except ValueError:
+                print(f"Error procesando fecha: {value['fecha_hora']}")
+                continue
 
     # Ordenar las temperaturas cronológicamente
-    datos_temperatura = sorted(datos_temperatura, key=lambda x: x['fecha'])
+    temperaturas = sorted(temperaturas, key=lambda x: x['fecha'])
 
-    return render_template('temperatura.html', datos_temperatura=datos_temperatura)
-
-
-
+    return render_template('temperatura.html', temperaturas=temperaturas)
 
 # Rutas de autenticación
 @app.route('/register', methods=['GET', 'POST'])

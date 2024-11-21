@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temperatura</title>
-</head>
-<body>
-    <h1>Registro de Temperaturas</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Temperatura</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for registro in datos_temperatura %}
-            <tr>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora }}</td>
-                <td>{{ registro.temperatura }} °C</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <h2>Registro de Temperaturas</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Temperatura (°C)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in temperaturas %}
+                <tr>
+                    <td>{{ registro.fecha }}</td>
+                    <td>{{ registro.hora }}</td>
+                    <td>{{ registro.temperatura }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
